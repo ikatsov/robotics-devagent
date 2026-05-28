@@ -20,14 +20,14 @@ def main() -> None:
     p = argparse.ArgumentParser(
         description=(
             "Validate simulation outputs using analyzers declared in a YAML file "
-            "(see examples/validation.example.yaml)."
+            "(see policies/validation.example.yaml)."
         ),
     )
     p.add_argument(
         "--config",
         type=Path,
         required=True,
-        help="Path to validation YAML (simulation paths, task / analyzers; see examples/validation.example.yaml).",
+        help="Path to validation YAML (simulation paths, task / analyzers; see policies/validation.example.yaml).",
     )
     args = p.parse_args()
     cfg = args.config.resolve()

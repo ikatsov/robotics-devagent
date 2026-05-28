@@ -25,7 +25,12 @@ def run_validation(job: ValidationJobConfig, *, config_path: str | None = None) 
     for spec in job.analyzers:
         if not spec.enabled:
             continue
-        analyzer = make_analyzer(spec.type, spec.params)
+        analyzer = make_analyzer(
+            spec.type,
+            spec.params,
+            task_key=job.task,
+            config_dir=job.config_dir,
+        )
         result = analyzer.analyze(ctx)
         summary.results.append(result)
         summary.exit_code = max(summary.exit_code, result.exit_code)

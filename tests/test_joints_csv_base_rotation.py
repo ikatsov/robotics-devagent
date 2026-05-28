@@ -1,14 +1,27 @@
-"""Tests for task-specific ``joints_csv_base_rotation`` analyzer."""
+"""Tests for task-specific ``joints_csv_base_rotation`` analyzer (policies bundle)."""
 
 from __future__ import annotations
 
+import functools
+import importlib.util
 import json
 from pathlib import Path
 
-from robot_manipulation_sim.validation.analyzers.task_specific.joints_csv_base_rotation import (
-    JointsCsvBaseRotationAnalyzer,
-)
 from robot_manipulation_sim.validation.context import SimulationArtifacts, ValidationContext
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+@functools.lru_cache(maxsize=1)
+def _analyzer_cls() -> type:
+    path = _repo_root() / "policies" / "impl" / "base_rotation" / "joints_csv_base_rotation.py"
+    spec = importlib.util.spec_from_file_location("joints_csv_base_rotation_policy", path)
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.JointsCsvBaseRotationAnalyzer
 
 
 def _hdr() -> str:
@@ -29,7 +42,7 @@ def test_base_rotation_passes_pan_only(tmp_path: Path) -> None:
     mp4 = tmp_path / "rollout.mp4"
     mp4.write_bytes(b"x")
     ctx = ValidationContext(simulation=SimulationArtifacts(video=mp4, joints_csv=p), task_spec="base pan only")
-    r = JointsCsvBaseRotationAnalyzer(
+    r = _analyzer_cls()(
         {"no_json_file": True, "min_pan_total_rad": 0.3, "home_max_excursion_rad": 0.2, "home_max_span_per_s": 0.08}
     ).analyze(ctx)
     assert r.ok and r.exit_code == 0
@@ -49,7 +62,7 @@ def test_base_rotation_fails_elbow(tmp_path: Path) -> None:
     mp4 = tmp_path / "rollout.mp4"
     mp4.write_bytes(b"x")
     ctx = ValidationContext(simulation=SimulationArtifacts(video=mp4, joints_csv=p))
-    r = JointsCsvBaseRotationAnalyzer(
+    r = _analyzer_cls()(
         {"no_json_file": True, "min_pan_total_rad": 0.01, "home_max_excursion_rad": 0.5, "home_max_span_per_s": 0.04}
     ).analyze(ctx)
     assert not r.ok and r.exit_code == 1
@@ -63,7 +76,7 @@ def test_writes_json(tmp_path: Path) -> None:
     mp4 = tmp_path / "rollout.mp4"
     mp4.write_bytes(b"x")
     ctx = ValidationContext(simulation=SimulationArtifacts(video=mp4, joints_csv=p))
-    JointsCsvBaseRotationAnalyzer({"min_pan_total_rad": 0.2, "home_max_excursion_rad": 0.2}).analyze(ctx)
+    _analyzer_cls()({"min_pan_total_rad": 0.2, "home_max_excursion_rad": 0.2}).analyze(ctx)
     out = tmp_path / "rollout.joints_base.json"
     assert out.is_file()
     assert "summary_task_agnostic" in json.loads(out.read_text(encoding="utf-8"))

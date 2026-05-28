@@ -76,8 +76,8 @@ def test_load_validation_yaml_task_mode_merges_analyzers(tmp_path: Path) -> None
     frames = [(np.zeros((32, 48, 3), dtype=np.uint8) + 30) for _ in range(4)]
     imageio.mimsave(str(mp4), frames, fps=4, codec="libx264", macro_block_size=None)
 
-    td = tmp_path / "task"
-    td.mkdir()
+    td = tmp_path / "impl" / "demo_task"
+    td.mkdir(parents=True)
     (td / "demo_task.py").write_text(
         "import numpy as np\n\ndef policy(obs, step, env):\n    return np.array(env.data.ctrl, copy=True)\n",
         encoding="utf-8",
@@ -115,3 +115,17 @@ def test_load_validation_yaml_task_mode_merges_analyzers(tmp_path: Path) -> None
     assert job.analyzers[1].params["output_name"] == "m2.json"
     assert job.analyzers[2].params["output_name"] == "m3.json"
     assert job.task_spec_inline == "Do the demo thing."
+    assert job.config_dir == tmp_path.resolve()
+
+
+def test_make_analyzer_loads_task_impl_from_policies() -> None:
+    from robot_manipulation_sim.validation.analyzers import make_analyzer
+
+    pol = _repo_root() / "policies"
+    a = make_analyzer(
+        "joints_csv_base_rotation",
+        {"no_json_file": True},
+        task_key="base_rotation",
+        config_dir=pol,
+    )
+    assert type(a).__name__ == "JointsCsvBaseRotationAnalyzer"

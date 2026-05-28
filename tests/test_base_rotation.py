@@ -12,7 +12,7 @@ from robot_manipulation_sim import UR5GripperEnv
 
 
 def _load_policy_module():
-    path = Path(__file__).resolve().parents[1] / "examples" / "task" / "base_rotation.py"
+    path = Path(__file__).resolve().parents[1] / "policies" / "impl" / "base_rotation" / "base_rotation.py"
     spec = importlib.util.spec_from_file_location("base_rotation", path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

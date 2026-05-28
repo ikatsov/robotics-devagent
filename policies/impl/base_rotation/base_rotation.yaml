@@ -1,6 +1,6 @@
-# Task rubric + intent for ``task: base_rotation`` (see ``examples/validation.example.yaml``).
-# The ``task:`` value must match this file's stem: ``base_rotation`` → ``base_rotation.yaml`` + ``base_rotation.py``.
-# ``policy_module`` is resolved from the main config's ``base_dir`` (repo root when using ``examples/validation.example.yaml``).
+# Task rubric + intent for ``task: base_rotation`` (see ``policies/validation.example.yaml``).
+# The ``task:`` value must match this directory and filenames: ``impl/base_rotation/base_rotation.{yaml,py}``.
+# ``policy_module`` is resolved from the main config's ``base_dir`` (repo root when using ``policies/validation.example.yaml``).
 
 task_spec:
   inline: |
@@ -11,7 +11,7 @@ task_spec:
     of shoulder/elbow/wrist beyond small tracking error.
     Motion must look smooth and controlled, not chaotic.
     Fail if the arm collides catastrophically with itself or the environment.
-  policy_module: examples/task/base_rotation.py
+  policy_module: policies/impl/base_rotation/base_rotation.py
 
 task_analyzers:
   - type: joints_csv_base_rotation

@@ -1,22 +1,22 @@
 # Defaults for ``scripts/simulate_policy.py`` (load with ``--config`` or rely on this path as the default).
 #
-# Paths: ``base_dir`` is joined with this file's directory (``examples/`` + ``..`` → repo root).
+# Paths: ``base_dir`` is joined with this file's directory (``policies/`` + ``..`` → repo root).
 # ``policy_file``, ``run_dir``, and ``video`` are resolved relative to that base unless absolute.
 #
 # Run (from repo root):
-#   python scripts/simulate_policy.py --config examples/simulate_policy.example.yaml
+#   python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml
 # Override policy path:
-#   python scripts/simulate_policy.py --config examples/simulate_policy.example.yaml examples/task/base_rotation.py
+#   python scripts/simulate_policy.py --config policies/simulate_policy.example.yaml policies/impl/base_rotation/base_rotation.py
 
 version: 1
 base_dir: ..
 
-policy_file: examples/task/base_rotation.py
+policy_file: policies/impl/base_rotation/base_rotation.py
 symbol: policy
 
 steps: 500
 episodes: 1
-rgb: false
+rgb: true
 lift_z: 0.12
 strict: false
 

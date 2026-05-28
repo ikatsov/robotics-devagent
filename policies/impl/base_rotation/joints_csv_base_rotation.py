@@ -1,9 +1,9 @@
 """Task-specific joint CSV analyzer: slow shoulder_pan only, other joints near episode start (UR5 harness).
 
 Not a generic joint-log tool — hard-coded columns and rubric for the **base rotation at home** task.
-When the user task changes, add a **new** small module under ``task_specific/`` and a
-``TASK_SPECIFIC_REGISTRY`` entry (see robot-manipulation-task-loop skill). Do **not** put task rubrics
-in ``generic/``.
+This module lives next to the policy under ``policies/impl/<task>/``; the validation YAML references it
+via ``task_analyzers[].type: joints_csv_base_rotation`` (filename stem must match ``type``).
+It must export ``build(params)`` for dynamic loading (see ``robot_manipulation_sim.validation.analyzers``).
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import math
 from pathlib import Path
 from typing import Any
 
-from robot_manipulation_sim.validation.analyzers.base import AnalyzerResult
+from robot_manipulation_sim.validation.analyzers.base import AnalyzerResult, RolloutAnalyzer
 from robot_manipulation_sim.validation.context import ValidationContext
 from robot_manipulation_sim.validation.util import coerce_bool
 
@@ -230,3 +230,8 @@ class JointsCsvBaseRotationAnalyzer:
             messages=[str(json_path.resolve())] if json_path else [],
             artifacts={"verdict": verdict, "json_out": str(json_path) if json_path else None},
         )
+
+
+def build(params: dict[str, Any] | None = None) -> RolloutAnalyzer:
+    """Entry point for ``make_analyzer`` when loading from ``policies/impl/<task>/<type>.py``."""
+    return JointsCsvBaseRotationAnalyzer(params)

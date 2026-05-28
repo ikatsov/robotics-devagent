@@ -11,7 +11,16 @@ from dataclasses import fields, replace
 from pathlib import Path
 from typing import Any, Protocol, TextIO
 
-import imageio.v2 as imageio
+try:
+    import imageio.v2 as imageio
+except ModuleNotFoundError as e:
+    raise SystemExit(
+        "Missing dependency 'imageio' (bundled with this repo via pyproject.toml). "
+        "From the repo root, install into the interpreter you use to run this script, e.g.:\n"
+        "  python -m pip install -e .\n"
+        "If you use a venv, prefer:  .venv/bin/python scripts/simulate_policy.py …\n"
+        "so you do not pick up another Python (e.g. conda base) without those packages."
+    ) from e
 import mujoco
 import numpy as np
 
@@ -39,7 +48,7 @@ def _repo_root() -> Path:
 
 
 def _default_simulate_config_path() -> Path:
-    return _repo_root() / "examples" / "simulate_policy.example.yaml"
+    return _repo_root() / "policies" / "simulate_policy.example.yaml"
 
 
 class PolicyFn(Protocol):
@@ -221,7 +230,7 @@ def _parse_args(argv: list[str] | None = None) -> tuple[SimulateSettings, argpar
     p = argparse.ArgumentParser(
         description=(
             "Simulate a manipulation policy in the UR5 MuJoCo scene. "
-            "Defaults come from examples/simulate_policy.example.yaml when present, or pass --config PATH. "
+            "Defaults come from policies/simulate_policy.example.yaml when present, or pass --config PATH. "
             "CLI options override YAML."
         )
     )
@@ -304,7 +313,7 @@ def _parse_args(argv: list[str] | None = None) -> tuple[SimulateSettings, argpar
         if ns.policy_file is None:
             p.error(
                 "policy_file is required when no simulate YAML is found; "
-                "add examples/simulate_policy.example.yaml or pass --config PATH"
+                "add policies/simulate_policy.example.yaml or pass --config PATH"
             )
         settings = builtin_defaults(policy_file=ns.policy_file)
 

@@ -1,8 +1,9 @@
 """Policy for ``task: base_rotation`` — slow rotation about the robot base (vertical axis).
 
-Paired files (same stem ``base_rotation``):
-  ``examples/task/base_rotation.yaml`` — ``task_spec`` + ``task_analyzers`` (validation loads it when the main config sets ``task: base_rotation``).
-  ``examples/task/base_rotation.py`` — this module (pass to ``simulate_policy.py``).
+Paired bundle (same stem ``base_rotation`` under ``policies/impl/base_rotation/``):
+  ``base_rotation.yaml`` — ``task_spec`` + ``task_analyzers`` (validation loads it when the main config sets ``task: base_rotation``).
+  ``base_rotation.py`` — this module (pass to ``simulate_policy.py``).
+  ``joints_csv_base_rotation.py`` — task-specific rollout analyzer (loaded by ``type: joints_csv_base_rotation``).
 
 Uses **closed-loop** targets on ``shoulder_pan_joint`` (small steps from measured ``qpos``).
 

@@ -14,8 +14,8 @@ def _repo_root() -> Path:
 
 
 def test_validation_example_yaml_has_task_spec_inline():
-    """Intent for agents lives in ``examples/task/<task>.yaml`` when using ``task:`` in the main config."""
-    path = _repo_root() / "examples" / "task" / "base_rotation.yaml"
+    """Intent for agents lives in ``policies/impl/<task>/<task>.yaml`` when using ``task:`` in the main config."""
+    path = _repo_root() / "policies" / "impl" / "base_rotation" / "base_rotation.yaml"
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     ts = raw.get("task_spec") or {}
     inline = ts.get("inline")

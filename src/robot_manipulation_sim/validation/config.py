@@ -89,6 +89,9 @@ class ValidationJobConfig:
     task_spec_policy: Path | None = None
     version: int = 1
     task: str | None = None
+    """Task stem when using ``impl/<task>/`` layout; ``None`` for legacy flat configs."""
+    config_dir: Path | None = None
+    """Directory containing the validation YAML (used to resolve ``impl/<task>/`` analyzers)."""
 
 
 def load_validation_yaml(path: Path) -> ValidationJobConfig:
@@ -105,11 +108,11 @@ def load_validation_yaml(path: Path) -> ValidationJobConfig:
         if not isinstance(task_name_raw, str):
             raise ValueError("'task' must be a string when set")
         task_key = _safe_task_name(task_name_raw)
-        task_dir = cfg_dir / "task"
+        task_dir = cfg_dir / "impl" / task_key
         td_path = (task_dir / f"{task_key}.yaml").resolve()
         task_def = _load_yaml_mapping(
             td_path,
-            f"task YAML for {task_key!r} (expected task/{td_path.name} beside the validation config)",
+            f"task YAML for {task_key!r} (expected impl/{task_key}/{td_path.name} beside the validation config)",
         )
         paired_policy_py = (task_dir / f"{task_key}.py").resolve()
         if not paired_policy_py.is_file():
@@ -202,6 +205,7 @@ def load_validation_yaml(path: Path) -> ValidationJobConfig:
         task_spec_inline=inline.strip() if isinstance(inline, str) and inline.strip() else None,
         task_spec_policy=policy_path,
         task=task_key,
+        config_dir=cfg_dir,
     )
 
 
